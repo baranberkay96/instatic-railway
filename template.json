@@ -1,0 +1,203 @@
+{
+ "name": "Instatic Visual Website Builder and CMS",
+ "description": "Open-source Webflow alternative: visual editor, CMS and clean HTML output.",
+ "category": "CMS",
+ "tags": [
+  "instatic",
+  "cms",
+  "website-builder",
+  "webflow-alternative",
+  "visual-editor",
+  "static-site",
+  "headless-cms",
+  "postgres",
+  "bun"
+ ],
+ "image": "https://cdn.jsdelivr.net/gh/CoreBunch/Instatic@v0.0.21/public/favicon.svg",
+ "upstream": {
+  "repo": "CoreBunch/Instatic",
+  "version": "0.0.21 (tag v0.0.21, commit d1abbefacb2e716dcab4c29ca972e2eb32dfab42; image ghcr.io/corebunch/instatic:0.0.21, index digest sha256:6aa56b7d048f894c7821d1e7debd94a54e09bcc45332ad04d51e30e20545bca0, created 2026-10-12)",
+  "checked": "2026-10-20"
+ },
+ "services": {
+  "Instatic": {
+   "icon": "https://cdn.jsdelivr.net/gh/CoreBunch/Instatic@v0.0.21/public/favicon.svg",
+   "source": {
+    "repo": "baranberkay96/instatic-railway",
+    "rootDirectory": "/services/instatic"
+   },
+   "startCommand": null,
+   "preDeployCommand": null,
+   "healthcheckPath": "/health",
+   "healthcheckTimeout": 600,
+   "restartPolicyType": "ON_FAILURE",
+   "restartPolicyMaxRetries": 10,
+   "numReplicas": 1,
+   "cronSchedule": null,
+   "publicDomain": true,
+   "targetPort": 8080,
+   "tcpProxy": null,
+   "volume": {
+    "mountPath": "/app/storage",
+    "backupSchedules": [
+     "DAILY",
+     "WEEKLY"
+    ]
+   },
+   "variables": {
+    "INSTATIC_ADMIN_EMAIL": {
+     "defaultValue": "",
+     "description": "Required. Your email: the Owner account is created with it on first boot, before the site goes online. It is your sign-in name; Instatic never sends email.",
+     "required": true
+    },
+    "INSTATIC_ADMIN_PASSWORD": {
+     "defaultValue": "${{secret(24, \"abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789\")}}",
+     "description": "Owner password, generated at deploy. Read on the first boot only; change it under Account after signing in.",
+     "required": false
+    },
+    "INSTATIC_SITE_NAME": {
+     "defaultValue": "My Instatic Site",
+     "description": "Site name set on the first boot. Rename the site later in Site settings.",
+     "required": false
+    },
+    "PORT": {
+     "defaultValue": "8080",
+     "description": "Port the Instatic server listens on. The public domain and the healthcheck use it.",
+     "required": false
+    },
+    "DATABASE_URL": {
+     "defaultValue": "${{Postgres.DATABASE_URL}}",
+     "description": "Postgres on the private network. sqlite:/app/storage/data/cms.db switches to SQLite (then delete the Postgres service).",
+     "required": false
+    },
+    "UPLOADS_DIR": {
+     "defaultValue": "/app/storage/uploads",
+     "description": "Media, fonts, plugin packages and published pages. Must stay on the /app/storage volume.",
+     "required": false
+    },
+    "RUNTIME_CACHE_DIR": {
+     "defaultValue": "/app/storage/runtime-cache",
+     "description": "npm packages installed at publish time for published pages. On the volume so they survive redeploys.",
+     "required": false
+    },
+    "STATIC_DIR": {
+     "defaultValue": "/app/dist",
+     "description": "Built admin app inside the image. Do not change.",
+     "required": false
+    },
+    "PUBLIC_ORIGIN": {
+     "defaultValue": "https://${{RAILWAY_PUBLIC_DOMAIN}}",
+     "description": "Public origin(s) trusted by the CSRF check, comma-separated. Append https://{your-domain} when you add a custom domain.",
+     "required": false
+    },
+    "INSTATIC_SECRET_KEY": {
+     "defaultValue": "${{secret(43, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/\")}}=",
+     "description": "Base64 32-byte key that encrypts AI provider keys, plugin secrets and MFA seeds. Generated once; keep it, never rotate it casually.",
+     "required": false
+    },
+    "TRUSTED_PROXY_CIDRS": {
+     "defaultValue": "",
+     "description": "Optional. Proxy CIDRs whose X-Forwarded-For is trusted for audit-log IPs and rate-limit keys. Never 0.0.0.0/0.",
+     "required": false
+    },
+    "INSTATIC_DB_WAIT_SECONDS": {
+     "defaultValue": "300",
+     "description": "How long the boot waits for Postgres before giving up (Railway then restarts the service).",
+     "required": false
+    },
+    "INSTATIC_VERSION": {
+     "defaultValue": "0.0.21",
+     "description": "Instatic image tag, used as a build argument. Change it and redeploy to upgrade; read the changelog first.",
+     "required": false
+    },
+    "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+     "defaultValue": "30",
+     "description": "Time between SIGTERM and SIGKILL so live co-editing documents are flushed on redeploy.",
+     "required": false
+    }
+   }
+  },
+  "Postgres": {
+   "icon": "https://devicons.railway.app/i/postgresql.svg",
+   "source": {
+    "image": "ghcr.io/railwayapp-templates/postgres-ssl:18"
+   },
+   "startCommand": null,
+   "preDeployCommand": null,
+   "healthcheckPath": null,
+   "healthcheckTimeout": null,
+   "restartPolicyType": "ON_FAILURE",
+   "restartPolicyMaxRetries": 10,
+   "numReplicas": 1,
+   "cronSchedule": null,
+   "publicDomain": false,
+   "targetPort": null,
+   "tcpProxy": null,
+   "volume": {
+    "mountPath": "/var/lib/postgresql/data"
+   },
+   "variables": {
+    "PGDATA": {
+     "defaultValue": "/var/lib/postgresql/data/pgdata",
+     "description": "Location where the database will be initialized.",
+     "required": false
+    },
+    "PGHOST": {
+     "defaultValue": "${{RAILWAY_PRIVATE_DOMAIN}}",
+     "description": "Railway Private Domain Name.",
+     "required": false
+    },
+    "PGPORT": {
+     "defaultValue": "5432",
+     "description": "Port to connect to Postgres.",
+     "required": false
+    },
+    "PGUSER": {
+     "defaultValue": "${{ POSTGRES_USER }}",
+     "description": "Required variable for Data panel.",
+     "required": false
+    },
+    "PGDATABASE": {
+     "defaultValue": "${{POSTGRES_DB}}",
+     "description": "Required variable for the data panel.",
+     "required": false
+    },
+    "PGPASSWORD": {
+     "defaultValue": "${{POSTGRES_PASSWORD}}",
+     "description": "Required variable for Data panel.",
+     "required": false
+    },
+    "POSTGRES_DB": {
+     "defaultValue": "railway",
+     "description": "Default database created when image is started.",
+     "required": false
+    },
+    "DATABASE_URL": {
+     "defaultValue": "postgresql://${{PGUSER}}:${{POSTGRES_PASSWORD}}@${{RAILWAY_PRIVATE_DOMAIN}}:5432/${{PGDATABASE}}",
+     "description": "URL to connect to Postgres database.",
+     "required": false
+    },
+    "POSTGRES_USER": {
+     "defaultValue": "postgres",
+     "description": "User to connect to Postgres DB.",
+     "required": false
+    },
+    "SSL_CERT_DAYS": {
+     "defaultValue": "820",
+     "description": "SSL certificate expiry in days.",
+     "required": false
+    },
+    "POSTGRES_PASSWORD": {
+     "defaultValue": "${{ secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\") }}",
+     "description": "Password to connect to DB.",
+     "required": false
+    },
+    "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+     "defaultValue": "60",
+     "description": "Allow Postgres to cleanly shut down.",
+     "required": false
+    }
+   }
+  }
+ }
+}
