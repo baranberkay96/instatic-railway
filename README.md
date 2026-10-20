@@ -1,5 +1,7 @@
 # Deploy and Host Instatic with Railway
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/instatic-visual-website-builder-and-cms?referralCode=20H68q)
+
 Instatic is an open-source (MIT) visual website builder and CMS: a canvas editor, pages, collections and content entries, media, forms and plugins, published as clean HTML and CSS without a framework runtime. This community template runs Instatic 0.0.21 on Postgres with a persistent volume and an Owner account that exists before the site goes online.
 
 ## About Hosting Instatic
